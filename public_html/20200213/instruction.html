@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-02-13 Thu 18:38 -->
+<!-- 2020-02-13 Thu 19:46 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Token과 Instruction의 수명</title>
@@ -320,12 +320,6 @@ for the JavaScript code in this tag.
 ~
 ~
 ~
-~
-~
-~
-~
-~
-~
 ~</span>
 </pre>
 </div>
@@ -385,12 +379,6 @@ Parse가 &amp;'s str의 수명을 갖는다면 이런식의 코드는 짜기가 
 ~
 ~
 ~
-~
-~
-~
-~
-~
-~
 ~</span>
 </pre>
 </div>
@@ -413,7 +401,7 @@ Parse가 &amp;'s str의 수명을 갖는다면 이런식의 코드는 짜기가 
 </p>
 
 <p>
-일단 Token에 있는 &amp;'s str을 그대로 사용하지 못하고 Bump::alloc<sub>str을</sub> 통해서 새로 할당 + 복사를 해줘야한다
+일단 Token에 있는 &amp;'s str을 그대로 사용하지 못하고 Bump::alloc_str을 통해서 새로 할당 + 복사를 해줘야한다
 </p>
 
 <p>
@@ -421,7 +409,7 @@ Parse가 &amp;'s str의 수명을 갖는다면 이런식의 코드는 짜기가 
 </p>
 
 <p>
-그리고 include<sub>str</sub>!를 이용한다던가 해서 문자열의 수명에 크게 구애받지 않는다면 쓸데없이 Bump를 사용하지 않아도 될것이다
+그리고 include_str!를 이용한다던가 해서 문자열의 수명에 크게 구애받지 않는다면 쓸데없이 Bump를 사용하지 않아도 될것이다
 </p>
 
 <p>
@@ -502,12 +490,6 @@ Bump는 모든 Parser와 Context가 &amp;로 공유할수 있기에 스크립트
 ~
 ~
 ~
-~
-~
-~
-~
-~
-~
 ~</span>
 </pre>
 </div>
@@ -515,7 +497,7 @@ Bump는 모든 Parser와 Context가 &amp;로 공유할수 있기에 스크립트
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2020-02-13 Thu 18:38</p>
+<p class="date">Created: 2020-02-13 Thu 19:46</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
