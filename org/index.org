@@ -2,5 +2,5 @@
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
 
 * 20200213
-
 ** [[file:20200213/select.org][선택 구문과 스택 정리버그]]
+** [[file:20200213/instruction.org][Token과 Instruction의 수명]]

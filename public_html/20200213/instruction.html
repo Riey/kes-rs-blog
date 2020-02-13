@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-02-13 Thu 18:38 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Token과 Instruction의 수명</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/styles/readtheorg/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/styles/readtheorg/css/readtheorg.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/styles/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/styles/readtheorg/js/readtheorg.js"></script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Token과 Instruction의 수명</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgee31167">1. Token과 Instruction이 같은 수명을 가지는것의 단점</a></li>
+<li><a href="#orgcd06d99">2. Token과 Instruction 다른 수명을 가지는것의 단점</a></li>
+<li><a href="#orgfe6f2a8">3. 그렇다면 어떻게?</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgee31167" class="outline-2">
+<h2 id="orgee31167"><span class="section-number-2">1</span> Token과 Instruction이 같은 수명을 가지는것의 단점</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+현재 Parser는 &amp;'c Bump를 받아서 Vec&lt;'c, Instruction&lt;'c&gt;&gt;를 돌려준다
+</p>
+
+<p>
+하지만 그냥 &amp;'s str에서 잘라다가 Vec&lt;Instruction&lt;'s&gt;&gt;를 만들면 안되는가?
+</p>
+
+<p>
+이런 경우를 생각해보자
+</p>
+
+<div class="org-src-container">
+<pre class="src src-rust"><span style="color: #ab78000020ce;">use</span> <span style="color: #558b2f;">kes</span>::<span style="color: #558b2f;">parser</span>::<span style="color: #95bb0e858823;">parse</span>;
+
+<span style="color: #0000675a343f;">fn</span> <span style="color: #ab9900002143;">main</span><span style="color: #e91e63;">()</span> <span style="color: #e91e63;">{</span>
+    <span style="color: #000067d5a604;">let</span> <span style="color: #968b2fa00000;">scripts</span> <span style="color: #af0400003029;">=</span> <span style="color: #FFA000;">vec!</span><span style="color: #1565C0;">[</span><span style="color: #689f38;">"foo.kes"</span>, <span style="color: #689f38;">"bar.kes"</span>, <span style="color: #689f38;">"baz.kes"</span><span style="color: #1565C0;">]</span>;
+
+    <span style="color: #607d8b;">// </span><span style="color: #607d8b;">&#50668;&#44592;&#49436; Instruction&#51060; &#50612;&#46523;&#44172; &#49688;&#47749;&#51012; &#44054;&#45716;&#44032;?</span>
+    <span style="color: #000067d5a604;">let</span> <span style="color: #b043000048e3;">compiled_sources</span>: <span style="color: #0097A7;">Vec</span><span style="color: #1565C0;">&lt;</span><span style="color: #0097A7;">Vec</span><span style="color: #EF6C00;">&lt;</span><span style="color: #0097A7;">Instruction</span><span style="color: #B388FF;">&lt;</span>'<span style="color: #8aed1ee39323;">_</span><span style="color: #B388FF;">&gt;</span><span style="color: #EF6C00;">&gt;</span><span style="color: #1565C0;">&gt;</span> <span style="color: #af0400003029;">=</span> <span style="color: #968b2fa00000;">scripts</span>
+        .<span style="color: #a54c000070d0;">map</span><span style="color: #1565C0;">(</span>|<span style="color: #b07f000042f4;">script</span>| <span style="color: #EF6C00;">{</span>
+            <span style="color: #607d8b;">// </span><span style="color: #607d8b;">...</span>
+            <span style="color: #95bb0e858823;">parse</span><span style="color: #B388FF;">(</span><span style="color: #FFA000;">todo!</span><span style="color: #76ff03;">()</span><span style="color: #B388FF;">)</span>
+        <span style="color: #EF6C00;">}</span><span style="color: #1565C0;">)</span>
+        .<span style="color: #8aab1f2c935e;">collect</span><span style="color: #1565C0;">()</span>;
+<span style="color: #e91e63;">} 
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~</span>
+</pre>
+</div>
+
+<p>
+Parse가 &amp;'s str의 수명을 갖는다면 이런식의 코드는 짜기가 힘들게된다 스코프 밖에서 's가 계속 빌려진 상태로 존재해야하기 때문이다
+</p>
+
+<p>
+만약 클로저안에서 String을 만들고 그 레퍼런스를 넘겨준다고 생각해보자 그러면 로컬 변수의 레퍼런스를 리턴하는 셈이므로 컴파일 에러가 뜬다
+</p>
+
+<div class="org-src-container">
+<pre class="src src-rust"><span style="color: #ab78000020ce;">use</span> <span style="color: #558b2f;">kes</span>::<span style="color: #558b2f;">parser</span>::<span style="color: #95bb0e858823;">parse</span>;
+<span style="color: #ab78000020ce;">use</span> <span style="color: #558b2f;">std</span>::<span style="color: #558b2f;">fs</span>::<span style="color: #7d6745590000;">read_to_string</span>;
+
+<span style="color: #0000675a343f;">fn</span> <span style="color: #ab9900002143;">main</span><span style="color: #e91e63;">()</span> <span style="color: #e91e63;">{</span>
+    <span style="color: #000067d5a604;">let</span> <span style="color: #968b2fa00000;">scripts</span> <span style="color: #af0400003029;">=</span> <span style="color: #FFA000;">vec!</span><span style="color: #1565C0;">[</span><span style="color: #689f38;">"foo.kes"</span>, <span style="color: #689f38;">"bar.kes"</span>, <span style="color: #689f38;">"baz.kes"</span><span style="color: #1565C0;">]</span>;
+
+    <span style="color: #607d8b;">// </span><span style="color: #607d8b;">&#50668;&#44592;&#49436; Instruction&#51060; &#50612;&#46523;&#44172; &#49688;&#47749;&#51012; &#44054;&#45716;&#44032;?</span>
+    <span style="color: #000067d5a604;">let</span> <span style="color: #b043000048e3;">compiled_sources</span>: <span style="color: #0097A7;">Vec</span><span style="color: #1565C0;">&lt;</span><span style="color: #0097A7;">Vec</span><span style="color: #EF6C00;">&lt;</span><span style="color: #0097A7;">Instruction</span><span style="color: #B388FF;">&lt;</span>'<span style="color: #8aed1ee39323;">_</span><span style="color: #B388FF;">&gt;</span><span style="color: #EF6C00;">&gt;</span><span style="color: #1565C0;">&gt;</span> <span style="color: #af0400003029;">=</span> <span style="color: #968b2fa00000;">scripts</span>
+        .<span style="color: #a54c000070d0;">map</span><span style="color: #1565C0;">(</span>|<span style="color: #b07f000042f4;">script</span>| <span style="color: #EF6C00;">{</span>
+            <span style="color: #000067d5a604;">let</span> <span style="color: #41c25b620000;">source</span> <span style="color: #af0400003029;">=</span> <span style="color: #7d6745590000;">read_to_string</span><span style="color: #B388FF;">(</span><span style="color: #b07f000042f4;">script</span><span style="color: #B388FF;">)</span>.<span style="color: #000068b596ec;">expect</span><span style="color: #B388FF;">(</span><span style="color: #689f38;">"Can't read source"</span><span style="color: #B388FF;">)</span>;
+            <span style="color: #95bb0e858823;">parse</span><span style="color: #B388FF;">(</span>&amp;<span style="color: #41c25b620000;">source</span><span style="color: #B388FF;">)</span> <span style="color: #607d8b;">// </span><span style="color: #607d8b;">&#47196;&#52972;&#48320;&#49688; source&#51032; &#47112;&#54140;&#47088;&#49828;&#47484; &#47532;&#53556;&#54616;&#47140;&#44256;&#54632; E0515</span>
+        <span style="color: #EF6C00;">}</span><span style="color: #1565C0;">)</span>
+        .<span style="color: #8aab1f2c935e;">collect</span><span style="color: #1565C0;">()</span>;
+<span style="color: #e91e63;">} 
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~</span>
+</pre>
+</div>
+
+<p>
+단순히 로컬에서 String을 만드는 경우뿐만 아니라 같은 String 버퍼를 공유해서 여러 파일을 읽는등 String을 빌려진 상태로 두기 어려운 경우가 있다
+</p>
+
+<p>
+또한 식별자와 문자열 리터럴만 저장할수없고 무조건 <b>전체</b> 문자열을 들고 있어야 하는것은 메모리를 더 먹게된다
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgcd06d99" class="outline-2">
+<h2 id="orgcd06d99"><span class="section-number-2">2</span> Token과 Instruction 다른 수명을 가지는것의 단점</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+반대로 지금처럼 Bump를 이용해서 수명을 다르게 만든것의 단점은 뭐가 있을까?
+</p>
+
+<p>
+일단 Token에 있는 &amp;'s str을 그대로 사용하지 못하고 Bump::alloc<sub>str을</sub> 통해서 새로 할당 + 복사를 해줘야한다
+</p>
+
+<p>
+물론 그걸 위한 bumpalo인만큼 그 속도는 아주 빠르긴 하지만 분명 느려지긴한다
+</p>
+
+<p>
+그리고 include<sub>str</sub>!를 이용한다던가 해서 문자열의 수명에 크게 구애받지 않는다면 쓸데없이 Bump를 사용하지 않아도 될것이다
+</p>
+
+<p>
+또한 위에서 String이 's만큼 빌려진 상태로 있어야 하는것과 마찬가지로 Bump또한 'c만큼 빌려진 상태로 있어야한다
+</p>
+
+<p>
+Bump는 모든 Parser와 Context가 &amp;로 공유할수 있기에 스크립트마다 새로 만들어야하는 String보단 사정이 낫긴하지만 역시 불편한 상황이 종종 발생할수 있다
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-orgfe6f2a8" class="outline-2">
+<h2 id="orgfe6f2a8"><span class="section-number-2">3</span> 그렇다면 어떻게?</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+결국 둘다 어느정도 트레이드 오프가 있고 그건 사용자의 요구사항에 달렸기 때문에
+</p>
+
+<p>
+사용자가 두가지 경우를 모두 사용할수 있도록 trait를 이용해서 추상화 해두는것이 최선이라 할 수 있겠다
+</p>
+
+<p>
+대충 이런 코드를 예상해본다
+</p>
+
+<div class="org-src-container">
+<pre class="src src-rust"><span style="color: #0000680844fc;">pub</span> <span style="color: #7b872c349eee;">trait</span> <span style="color: #0097A7;">InstAlloc</span><span style="color: #e91e63;">&lt;</span>'<span style="color: #000069096ef6;">s</span>, '<span style="color: #63e638d7ab5a;">c</span><span style="color: #e91e63;">&gt;</span> <span style="color: #e91e63;">{</span>
+    <span style="color: #0000675a343f;">fn</span> <span style="color: #00005c76c4dd;">alloc_str</span><span style="color: #1565C0;">(</span>&amp;'<span style="color: #63e638d7ab5a;">c</span> <span style="color: #00006681b14d;">self</span>, <span style="color: #0000678137b3;">text</span>: &amp;'<span style="color: #000069096ef6;">s</span> <span style="color: #0097A7;">str</span><span style="color: #1565C0;">)</span> -&gt; &amp;'<span style="color: #63e638d7ab5a;">c</span> <span style="color: #0097A7;">str</span>;
+<span style="color: #e91e63;">}</span>
+
+<span style="color: #000065dc177a;">impl</span><span style="color: #e91e63;">&lt;</span>'<span style="color: #000069096ef6;">s</span>, '<span style="color: #63e638d7ab5a;">c</span><span style="color: #e91e63;">&gt;</span> <span style="color: #0097A7;">InstAlloc</span><span style="color: #e91e63;">&lt;</span>'<span style="color: #000069096ef6;">s</span>, '<span style="color: #63e638d7ab5a;">c</span><span style="color: #e91e63;">&gt;</span> <span style="color: #0000668eb0f6;">for</span> <span style="color: #0097A7;">Bump</span> <span style="color: #e91e63;">{</span>
+    <span style="color: #FFA000;">#</span><span style="color: #1565C0;">[</span><span style="color: #FFA000;">inline</span><span style="color: #EF6C00;">(</span><span style="color: #FFA000;">always</span><span style="color: #EF6C00;">)</span><span style="color: #1565C0;">]</span>
+    <span style="color: #0000675a343f;">fn</span> <span style="color: #00005c76c4dd;">alloc_str</span><span style="color: #1565C0;">(</span>&amp;'<span style="color: #63e638d7ab5a;">c</span> <span style="color: #00006681b14d;">self</span>, <span style="color: #0000678137b3;">text</span>: &amp;'<span style="color: #000069096ef6;">s</span> <span style="color: #0097A7;">str</span><span style="color: #1565C0;">)</span> -&gt; &amp;'<span style="color: #63e638d7ab5a;">c</span> <span style="color: #0097A7;">str</span> <span style="color: #1565C0;">{</span>
+        <span style="color: #00006681b14d;">self</span>.<span style="color: #00005c76c4dd;">alloc_str</span><span style="color: #EF6C00;">(</span><span style="color: #0000678137b3;">text</span><span style="color: #EF6C00;">)</span>
+    <span style="color: #1565C0;">}</span>
+<span style="color: #e91e63;">}</span>
+
+<span style="color: #0000680844fc;">pub</span> <span style="color: #a9ea00001bad;">struct</span> <span style="color: #0097A7;">DirectInstAlloc</span>;
+
+<span style="color: #000065dc177a;">impl</span><span style="color: #e91e63;">&lt;</span>'<span style="color: #000069096ef6;">s</span><span style="color: #e91e63;">&gt;</span> <span style="color: #0097A7;">InstAlloc</span><span style="color: #e91e63;">&lt;</span>'<span style="color: #000069096ef6;">s</span>, '<span style="color: #000069096ef6;">s</span><span style="color: #e91e63;">&gt;</span> <span style="color: #0000668eb0f6;">for</span> <span style="color: #0097A7;">DirectInstAlloc</span> <span style="color: #e91e63;">{</span>
+    <span style="color: #FFA000;">#</span><span style="color: #1565C0;">[</span><span style="color: #FFA000;">inline</span><span style="color: #EF6C00;">(</span><span style="color: #FFA000;">always</span><span style="color: #EF6C00;">)</span><span style="color: #1565C0;">]</span>
+    <span style="color: #0000675a343f;">fn</span> <span style="color: #00005c76c4dd;">alloc_str</span><span style="color: #1565C0;">(</span>&amp;'<span style="color: #000069096ef6;">s</span> <span style="color: #00006681b14d;">self</span>, <span style="color: #0000678137b3;">text</span>: &amp;'<span style="color: #000069096ef6;">s</span> <span style="color: #0097A7;">str</span><span style="color: #1565C0;">)</span> -&gt; &amp;'<span style="color: #000069096ef6;">s</span> <span style="color: #0097A7;">str</span> <span style="color: #1565C0;">{</span>
+        <span style="color: #0000678137b3;">text</span>
+    <span style="color: #1565C0;">}</span>
+<span style="color: #e91e63;">} 
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2020-02-13 Thu 18:38</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

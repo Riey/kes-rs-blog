@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-02-13 Thu 14:47 -->
+<!-- 2020-02-13 Thu 18:39 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>선택 구문과 스택 정리버그</title>
@@ -252,31 +252,32 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org55c58c6">1. 문제</a></li>
-<li><a href="#org59806d9">2. 해결법</a></li>
+<li><a href="#org8700aa2">1. 문제</a></li>
+<li><a href="#org1da1f7d">2. 해결법</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org55c58c6" class="outline-2">
-<h2 id="org55c58c6"><span class="section-number-2">1</span> 문제</h2>
+<div id="outline-container-org8700aa2" class="outline-2">
+<h2 id="org8700aa2"><span class="section-number-2">1</span> 문제</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 선택 구문을 사용할때 블록안에서 스택을 추가할때 제대로 정리가 되지 않는 버그가 생겼다
 </p>
 
 <div class="org-src-container">
-<pre class="src src-kes"><span style="color: #00796b;">&#49440;&#53469;</span> <span style="color: #689f38;">1</span> <span style="color: #e91e63;">{</span>
+<pre class="src src-kes"><span style="color: #8ba61e12927c;">&#49440;&#53469;</span> <span style="color: #689f38;">1</span> <span style="color: #e91e63;">{</span>
     <span style="color: #689f38;">1</span> <span style="color: #1565C0;">{</span>
         <span style="color: #689f38;">3</span>
     <span style="color: #1565C0;">}</span>
     <span style="color: #689f38;">2</span> <span style="color: #1565C0;">{</span>
         <span style="color: #689f38;">4</span>
     <span style="color: #1565C0;">}</span>
-    <span style="color: #00796b;">&#44536;&#50808;</span> <span style="color: #1565C0;">{</span>
+    <span style="color: #7c582ba39e64;">&#44536;&#50808;</span> <span style="color: #1565C0;">{</span>
         <span style="color: #689f38;">5</span>
     <span style="color: #1565C0;">}</span>
 <span style="color: #e91e63;">} 
+~
 ~
 ~
 ~
@@ -376,8 +377,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org59806d9" class="outline-2">
-<h2 id="org59806d9"><span class="section-number-2">2</span> 해결법</h2>
+<div id="outline-container-org1da1f7d" class="outline-2">
+<h2 id="org1da1f7d"><span class="section-number-2">2</span> 해결법</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 일단 <i>선택</i> 이 쌓은 값에대해 코드 생성시점에서 알수있는건 그저 그것이 결과적으로 한개의 값이 남는다는것 뿐이였다
@@ -444,7 +445,7 @@ BeginSelect / EndSelect는 너무 딱딱하니 다른놈도 써먹을만하도�
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2020-02-13 Thu 14:47</p>
+<p class="date">Created: 2020-02-13 Thu 18:39</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
