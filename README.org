@@ -1,6 +1,4 @@
 [[https://github.com/Riey/kes-rs][kes-rs]]의 개발블로그
 
 * 보는법
-
-이맥스로 [[file:index.org][index]] 를 보세요
-
+index.html 파일을 열거나 org/index.org 파일을 emacs로 여세요
