@@ -1,0 +1,115 @@
+#+TITLE: 선택 구문과 스택 정리버그 
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
+
+* 문제
+
+선택 구문을 사용할때 블록안에서 스택을 추가할때 제대로 정리가 되지 않는 버그가 생겼다
+
+#+INCLUDE: "./select.kes" src kes
+
+이 코드는 실행되고 *3* 이 남아있어야 하는데 실제로는 *1* 이 남아있었다
+
+코드의 컴파일 결과는 다음과 같았다
+
+#+BEGIN_EXAMPLE
+[
+  LoadInt(
+      1,
+  ),
+  Duplicate,
+  LoadInt(
+      1,
+  ),
+  Operator(
+      Equal,
+  ),
+  GotoIfNot(
+      7,
+  ),
+  LoadInt(
+      3,
+  ),
+  Goto(
+      12,
+  ),
+  Duplicate,
+  LoadInt(
+      2,
+  ),
+  Operator(
+      Equal,
+  ),
+  GotoIfNot(
+      13,
+  ),
+  LoadInt(
+      4,
+  ),
+  Goto(
+      14,
+  ),
+  LoadInt(
+      5,
+  ),
+  Pop,
+]
+#+END_EXAMPLE
+ 
+/선택/ 이 끝나고 /Pop/ 을 호출하는데 이건 스택의 맨 위의 값을 없에는 명령어라서 /선택/ 이 쌓은 값이 아니라 안의 블록들이 쌓은 값을 대신 없에버렸던것
+
+* 해결법
+
+일단 /선택/ 이 쌓은 값에대해 코드 생성시점에서 알수있는건 그저 그것이 결과적으로 한개의 값이 남는다는것 뿐이였다
+
+중간에 빌트인 함수의 호출이 들어갈수도 있기 때문에 이걸 Instruction에서 인라이닝 하는것은 불가능하다
+
+따라서 이 값을 특정하고 지우는것을 Context가 담당하도록 했다
+
+BeginSelect / EndSelect는 너무 딱딱하니 다른놈도 써먹을만하도록 MarkStack / RemoveMarked로 명명했다 다음이 그 결과물
+
+
+#+BEGIN_EXAMPLE
+[
+    LoadInt(
+        1,
+    ),
+    MarkStack,
+    Duplicate,
+    LoadInt(
+        1,
+    ),
+    Operator(
+        Equal,
+    ),
+    GotoIfNot(
+        8,
+    ),
+    LoadInt(
+        3,
+    ),
+    Goto(
+        13,
+    ),
+    Duplicate,
+    LoadInt(
+        2,
+    ),
+    Operator(
+        Equal,
+    ),
+    GotoIfNot(
+        14,
+    ),
+    LoadInt(
+        4,
+    ),
+    Goto(
+        15,
+    ),
+    LoadInt(
+        5,
+    ),
+    RemoveMarked,
+]
+#+END_EXAMPLE
+
